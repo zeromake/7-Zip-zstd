@@ -15,7 +15,9 @@
 #if defined(__FreeBSD__) || defined(BSD)
 #include <sys/types.h>
 #else
+#ifndef __APPLE__
 #include <sys/sysmacros.h>
+#endif
 #endif
 
 #endif

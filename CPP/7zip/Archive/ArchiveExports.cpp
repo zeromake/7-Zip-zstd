@@ -10,7 +10,13 @@
 
 #include "../Common/RegisterArc.h"
 
-static const unsigned kNumArcsMax = 72;
+#ifdef USE_DLL_EXPORT
+#define DLL_EXPORT_STDAPI EXTERN_C __declspec(dllexport) HRESULT STDAPICALLTYPE
+#else
+#define DLL_EXPORT_STDAPI STDAPI
+#endif
+
+static const unsigned kNumArcsMax = 256;
 static unsigned g_NumArcs = 0;
 static unsigned g_DefaultArcIndex = 0;
 static const CArcInfo *g_Arcs[kNumArcsMax];
@@ -59,8 +65,8 @@ static int FindFormatCalssId(const GUID *clsid)
   return -1;
 }
 
-STDAPI CreateArchiver(const GUID *clsid, const GUID *iid, void **outObject);
-STDAPI CreateArchiver(const GUID *clsid, const GUID *iid, void **outObject)
+DLL_EXPORT_STDAPI CreateArchiver(const GUID *clsid, const GUID *iid, void **outObject);
+DLL_EXPORT_STDAPI CreateArchiver(const GUID *clsid, const GUID *iid, void **outObject)
 {
   COM_TRY_BEGIN
   {
@@ -90,8 +96,8 @@ STDAPI CreateArchiver(const GUID *clsid, const GUID *iid, void **outObject)
   return S_OK;
 }
 
-STDAPI GetHandlerProperty2(UInt32 formatIndex, PROPID propID, PROPVARIANT *value);
-STDAPI GetHandlerProperty2(UInt32 formatIndex, PROPID propID, PROPVARIANT *value)
+DLL_EXPORT_STDAPI GetHandlerProperty2(UInt32 formatIndex, PROPID propID, PROPVARIANT *value);
+DLL_EXPORT_STDAPI GetHandlerProperty2(UInt32 formatIndex, PROPID propID, PROPVARIANT *value)
 {
   COM_TRY_BEGIN
   NWindows::NCOM::PropVariant_Clear(value);
@@ -133,21 +139,21 @@ STDAPI GetHandlerProperty2(UInt32 formatIndex, PROPID propID, PROPVARIANT *value
   COM_TRY_END
 }
 
-STDAPI GetHandlerProperty(PROPID propID, PROPVARIANT *value);
-STDAPI GetHandlerProperty(PROPID propID, PROPVARIANT *value)
+DLL_EXPORT_STDAPI GetHandlerProperty(PROPID propID, PROPVARIANT *value);
+DLL_EXPORT_STDAPI GetHandlerProperty(PROPID propID, PROPVARIANT *value)
 {
   return GetHandlerProperty2(g_DefaultArcIndex, propID, value);
 }
 
-STDAPI GetNumberOfFormats(UINT32 *numFormats);
-STDAPI GetNumberOfFormats(UINT32 *numFormats)
+DLL_EXPORT_STDAPI GetNumberOfFormats(UINT32 *numFormats);
+DLL_EXPORT_STDAPI GetNumberOfFormats(UINT32 *numFormats)
 {
   *numFormats = g_NumArcs;
   return S_OK;
 }
 
-STDAPI GetIsArc(UInt32 formatIndex, Func_IsArc *isArc);
-STDAPI GetIsArc(UInt32 formatIndex, Func_IsArc *isArc)
+DLL_EXPORT_STDAPI GetIsArc(UInt32 formatIndex, Func_IsArc *isArc);
+DLL_EXPORT_STDAPI GetIsArc(UInt32 formatIndex, Func_IsArc *isArc)
 {
   *isArc = NULL;
   if (formatIndex >= g_NumArcs)

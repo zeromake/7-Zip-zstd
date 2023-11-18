@@ -44,10 +44,17 @@ void RegisterArc(const CArcInfo *arcInfo) throw();
 #define REGISTER_ARC_V(n, e, ae, id, sigSize, sig, offs, flags, tf, crIn, crOut, isArc) \
   static const CArcInfo g_ArcInfo = { flags, id, sigSize, offs, sig, n, e, ae, tf, crIn, crOut, isArc } ; \
 
+#ifndef USE_DLL_EXPORT
+#define REGISTER_ARC_R(n, e, ae, id, sigSize, sig, offs, flags, tf, crIn, crOut, isArc) \
+  REGISTER_ARC_V      (n, e, ae, id, sigSize, sig, offs, flags, tf, crIn, crOut, isArc) \
+  void registerArc() { RegisterArc(&g_ArcInfo); }
+#else
 #define REGISTER_ARC_R(n, e, ae, id, sigSize, sig, offs, flags, tf, crIn, crOut, isArc) \
   REGISTER_ARC_V      (n, e, ae, id, sigSize, sig, offs, flags, tf, crIn, crOut, isArc) \
   struct CRegisterArc { CRegisterArc() { RegisterArc(&g_ArcInfo); }}; \
   static CRegisterArc g_RegisterArc;
+#endif
+
 
 
 #define REGISTER_ARC_I_CLS(cls, n, e, ae, id, sig, offs, flags, isArc) \
@@ -70,11 +77,19 @@ void RegisterArc(const CArcInfo *arcInfo) throw();
   IMP_CreateArcOut \
   REGISTER_ARC_R(n, e, ae, id, ARRAY_SIZE(sig), sig, offs, flags, tf, CreateArc, CreateArcOut, isArc)
 
+#ifndef USE_DLL_EXPORT
+#define REGISTER_ARC_IO_DECREMENT_SIG(n, e, ae, id, sig, offs, flags, tf, isArc) \
+  IMP_CreateArcIn \
+  IMP_CreateArcOut \
+  REGISTER_ARC_V(n, e, ae, id, ARRAY_SIZE(sig), sig, offs, flags, tf, CreateArc, CreateArcOut, isArc) \
+  void registerArc() { RegisterArc(&g_ArcInfo); }
+#else
 #define REGISTER_ARC_IO_DECREMENT_SIG(n, e, ae, id, sig, offs, flags, tf, isArc) \
   IMP_CreateArcIn \
   IMP_CreateArcOut \
   REGISTER_ARC_V(n, e, ae, id, ARRAY_SIZE(sig), sig, offs, flags, tf, CreateArc, CreateArcOut, isArc) \
   struct CRegisterArcDecSig { CRegisterArcDecSig() { sig[0]--; RegisterArc(&g_ArcInfo); }}; \
   static CRegisterArcDecSig g_RegisterArc;
+#endif
 
 #endif

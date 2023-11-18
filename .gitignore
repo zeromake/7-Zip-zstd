@@ -6,4 +6,9 @@
 *.pch
 *.exp
 *.lib
-
+*.o
+.xmake
+build
+.vscode
+.DS_Store
+*.7z

@@ -22,6 +22,14 @@ HRESULT SetLzmaProp(PROPID propID, const PROPVARIANT &prop, CLzmaEncProps &ep);
 
 namespace NLzma2 {
 
+#ifndef max
+#define max(a, b) (a > b ? a : b)
+#endif
+
+#ifndef min
+#define min(a, b) (a < b ? a : b)
+#endif
+
 CEncoder::CEncoder()
 {
   _encoder = NULL;

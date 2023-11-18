@@ -28,9 +28,13 @@ void RegisterCodec(const CCodecInfo *codecInfo) throw();
 #define REGISTER_CODEC_NAME(x) CRegisterCodec ## x
 #define REGISTER_CODEC_VAR(x) static const CCodecInfo g_CodecInfo_ ## x =
 
+#ifndef USE_DLL_EXPORT
+#define REGISTER_CODEC(x) void registerCodec##x() { RegisterCodec(&g_CodecInfo_ ## x); }
+#else
 #define REGISTER_CODEC(x) struct REGISTER_CODEC_NAME(x) { \
     REGISTER_CODEC_NAME(x)() { RegisterCodec(&g_CodecInfo_ ## x); }}; \
     static REGISTER_CODEC_NAME(x) g_RegisterCodec_ ## x;
+#endif
 
 
 #define REGISTER_CODECS_NAME(x) CRegisterCodecs ## x
@@ -39,7 +43,8 @@ void RegisterCodec(const CCodecInfo *codecInfo) throw();
 #define REGISTER_CODECS(x) struct REGISTER_CODECS_NAME(x) { \
     REGISTER_CODECS_NAME(x)() { for (unsigned i = 0; i < ARRAY_SIZE(g_CodecsInfo); i++) \
     RegisterCodec(&g_CodecsInfo[i]); }}; \
-    static REGISTER_CODECS_NAME(x) g_RegisterCodecs;
+    static REGISTER_CODECS_NAME(x) g_RegisterCodecs; \
+    void registerCodec##x() { for (unsigned i = 0; i < ARRAY_SIZE(g_CodecsInfo); i++) RegisterCodec(&g_CodecsInfo[i]); }
 
 
 #define REGISTER_CODEC_2(x, crDec, crEnc, id, name) \
@@ -96,11 +101,18 @@ void RegisterHasher(const CHasherInfo *hasher) throw();
 
 #define REGISTER_HASHER_NAME(x) CRegHasher_ ## x
 
+#ifndef USE_DLL_EXPORT
+#define REGISTER_HASHER(cls, id, name, size) \
+    STDMETHODIMP_(UInt32) cls::GetDigestSize() throw() { return size; } \
+    static IHasher *CreateHasherSpec() { return new cls(); } \
+    static const CHasherInfo g_HasherInfo = { CreateHasherSpec, id, name, size }; \
+    void regHasher##cls() { RegisterHasher(&g_HasherInfo); };
+#else
 #define REGISTER_HASHER(cls, id, name, size) \
     STDMETHODIMP_(UInt32) cls::GetDigestSize() throw() { return size; } \
     static IHasher *CreateHasherSpec() { return new cls(); } \
     static const CHasherInfo g_HasherInfo = { CreateHasherSpec, id, name, size }; \
     struct REGISTER_HASHER_NAME(cls) { REGISTER_HASHER_NAME(cls)() { RegisterHasher(&g_HasherInfo); }}; \
     static REGISTER_HASHER_NAME(cls) g_RegisterHasher;
-
+#endif
 #endif
