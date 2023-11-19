@@ -63,7 +63,6 @@ target("7zip")
         "CPP/Common/CRC.cpp",
         "CPP/Common/*Reg.cpp"
     )
-    add_syslinks("OleAut32", "User32", "Advapi32")
     -- add_defines("USE_DLL_EXPORT")
 
 target("demo")
@@ -72,4 +71,6 @@ target("demo")
     set_pcxxheader("CPP/7zip/Bundles/Format7zF/StdAfx.h")
     add_files("CPP/7zip/Bundles/Format7zF/StdAfx.cpp")
     add_deps("7zip")
-    add_syslinks("OleAut32", "User32", "Advapi32")
+    if is_plat("windows", "mingw") then
+        add_syslinks("OleAut32", "User32", "Advapi32")
+    end
