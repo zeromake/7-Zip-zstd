@@ -73,4 +73,5 @@ target("demo")
     add_deps("7zip")
     if is_plat("windows", "mingw") then
         add_syslinks("OleAut32", "User32", "Advapi32")
+        add_files("resource.rc")
     end

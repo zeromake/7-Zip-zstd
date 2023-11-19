@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   IInArchive *archiver = NULL;
   CreateArchiver(id.puuid, &IID_IInArchive, (void**)&archiver);
   CInFileStream *archiveStream = new CInFileStream;
-  if (!archiveStream->Open(std::move(FString(argv[1])))) panic("open error");
+  if (!archiveStream->Open(fas2fs(argv[1]))) panic("open error");
   UInt64 size;
   archiveStream->GetLength(size);
   printf("GetLength: %ld \n", size);

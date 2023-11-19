@@ -9,7 +9,6 @@
 # Visual Studio
 *.dsp text eol=crlf
 *.dsw text eol=crlf
-*.manifest text eol=crlf
 
 # Windows
 *.bat text eol=crlf
